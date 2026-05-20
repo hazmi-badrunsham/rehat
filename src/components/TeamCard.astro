@@ -1,17 +1,20 @@
 ---
+// src/components/TeamCard.astro
 import { Image } from 'astro:assets';
 
-// Define the expected props
 const { member } = Astro.props;
 ---
 
+<!-- Team Card -->
 <div 
   class="team-card clickable-team-card" 
   data-name={member.name}
   data-matric={member.matricNo || "Tiada Maklumat"}
   data-role={member.role}
+  data-email={member.email || ""}
+  data-dept={member.department || ""}
   data-img={member.image.src}
-  data-padlet={member.padletUrl || "#"}
+  data-padlet={member.padletUrl || ""}
 >
   <Image 
     src={member.image} 
@@ -19,42 +22,60 @@ const { member } = Astro.props;
     width={300} 
     height={300} 
     class="team-image" 
+    loading="lazy"
   />
 
   <h3>{member.name}</h3>
-
-  <p class="team-role" style="font-weight: bold;">
-    {member.role}
-  </p>
-
-  <p class="team-description">
-    {member.description}
-  </p>
+  <p class="team-role">{member.role}</p>
+  <p class="team-description">{member.description}</p>
 </div>
 
-<!-- Global Team Modal (Rendered only once per page cycle) -->
-<div id="team-modal" class="t-modal">
+<!-- Global Team Modal -->
+<div id="team-modal" class="t-modal" aria-hidden="true" role="dialog" aria-modal="true">
   <div class="t-modal-content">
-    <button class="t-modal-close">&times;</button>
+    <button class="t-modal-close" aria-label="Tutup modal">&times;</button>
     
-    <div class="t-modal-body">
-      <img id="m-team-img" src="" alt="Profile view" class="t-popup-img" />
-      <h2 id="m-team-name"></h2>
-      <p id="m-team-role" class="t-popup-role"></p>
-      
-      <div class="t-info-box">
-        <p><strong>No. Matrik:</strong> <span id="m-team-matric"></span></p>
+    <div class="t-modal-layout">
+      <!-- Left Sidebar: Profile Details -->
+      <div class="t-modal-sidebar">
+        <img id="m-team-img" src="" alt="Gambar profil" class="t-popup-img" />
+        <h2 id="m-team-name"></h2>
+        <p id="m-team-role" class="t-popup-role"></p>
+        
+        <div class="t-info-box">
+          <p><strong>No. Matrik:</strong> <span id="m-team-matric"></span></p>
+          <p><strong>Email:</strong> <a id="m-team-email" href="#" target="_blank" rel="noopener"></a></p>
+          <p><strong>Jabatan:</strong> <span id="m-team-dept"></span></p>
+        </div>
+
+        <!-- Lihat PDF Button -->
+        <a 
+          id="m-pdf-btn" 
+          href="#" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="pdf-btn"
+        >
+          📄 Lihat PDF
+        </a>
       </div>
 
-      <a id="m-team-padlet" href="" target="_blank" rel="noopener noreferrer" class="t-padlet-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        Buka Dokumen Padlet (PDF)
-      </a>
+      <!-- Right Main Panel: Embedded PDF iframe -->
+      <div class="t-modal-preview">
+        <div id="pdf-loading" class="pdf-spinner">Memuatkan Dokumen...</div>
+        <iframe 
+          id="m-team-iframe" 
+          src="" 
+          title="Dokumen Padlet PDF"
+          loading="lazy"
+        ></iframe>
+      </div>
     </div>
   </div>
 </div>
 
 <style>
+  /* === CARD STYLES === */
   .clickable-team-card {
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -65,14 +86,16 @@ const { member } = Astro.props;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   }
 
-  /* Modal Base Backdrop */
+
+
+  /* === MODAL STYLES === */
   .t-modal {
     position: fixed;
     z-index: 10000;
     inset: 0;
-    background: rgba(42, 26, 18, 0.6); /* Tinted background color match your theme */
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(42, 26, 18, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,18 +110,22 @@ const { member } = Astro.props;
     pointer-events: all;
   }
 
-  /* Modal Content Card Box */
+  /* MODAL DIMENSIONS (Increased Size) */
   .t-modal-content {
-    background: #f6f1e1; /* --cream variable profile color */
-    border: 2px solid #e4d6a9; /* --card border matching accent */
+    background: #f6f1e1;
+    border: 2px solid #e4d6a9;
     width: 100%;
-    max-width: 420px;
+    max-width: 1100px;
+    height: 90vh;
     border-radius: 2rem;
-    padding: 2.5rem 2rem;
+    padding: 2rem;
     position: relative;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-    transform: scale(0.95);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    transform: scale(0.96);
     transition: transform 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .t-modal.show .t-modal-content {
@@ -112,17 +139,34 @@ const { member } = Astro.props;
     background: none;
     border: none;
     font-size: 2.5rem;
-    color: #622b14; /* --primary */
+    color: #622b14;
     cursor: pointer;
     line-height: 1;
+    z-index: 10;
+    transition: transform 0.2s;
+  }
+  .t-modal-close:hover {
+    transform: scale(1.1);
+    color: #995f2f;
   }
 
-  /* Layout alignment inside the modal body */
-  .t-modal-body {
-    text-align: center;
+  .t-modal-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .t-modal-sidebar {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    border-right: 2px dashed #e4d6a9;
+    padding-right: 1.5rem;
+    overflow-y: auto;
+    padding-bottom: 1rem;
   }
 
   .t-popup-img {
@@ -130,57 +174,171 @@ const { member } = Astro.props;
     height: 130px;
     object-fit: cover;
     border-radius: 999px;
-    border: 4px solid #995f2f; /* --secondary */
-    margin-bottom: 1.5rem;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    border: 4px solid #995f2f;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
   }
 
-  .t-modal-body h2 {
-    font-family: "Poppins", sans-serif;
+  #m-team-name {
     color: #622b14;
     font-size: 1.4rem;
     font-weight: 700;
+    margin: 0 0 0.25rem 0;
     line-height: 1.3;
   }
 
   .t-popup-role {
     color: #995f2f;
     font-weight: 500;
-    margin-top: 0.25rem;
     font-size: 1rem;
+    margin: 0 0 1rem 0;
   }
 
   .t-info-box {
-    background: rgba(228, 214, 169, 0.4); /* soft card container blend */
-    padding: 0.75rem 1.5rem;
+    background: rgba(228, 214, 169, 0.5);
+    padding: 1rem 1.25rem;
     border-radius: 1rem;
-    margin-top: 1.25rem;
     width: 100%;
-    color: #2a1a12;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
   }
 
-  /* Premium Padlet Resource Trigger Button */
-  .t-padlet-btn {
-    margin-top: 1.5rem;
-    width: 100%;
-    padding: 1rem;
-    background: #622b14; /* --primary */
-    color: white;
-    font-weight: 600;
-    border-radius: 999px;
+  .t-info-box p {
+  margin: 0.6rem 0; /* Slightly increased for better breathing room */
+  color: #4a3728;
+  text-align: left; /* 👈 Force clean left alignment, remove justify */
+  display: flex;
+  align-items: flex-start;
+}
+
+.t-info-box strong {
+  display: inline-block;
+  width: 100px; /* 👈 Adjust this width to fit your longest label */
+  flex-shrink: 0;
+  color: #622b14; /* Optional: matches your theme's dark brown */
+}
+
+  .t-info-box a {
+    color: #622b14;
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .t-info-box a:hover {
+    text-decoration: underline;
+  }
+
+  /* PDF Button Style */
+  .pdf-btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, #995f2f, #622b14);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
     text-decoration: none;
-    transition: background 0.2s ease, transform 0.2s ease;
+    font-weight: 600;
     font-size: 0.95rem;
-    box-shadow: 0 8px 20px rgba(98, 43, 20, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 12px rgba(153, 95, 47, 0.3);
+  }
+  .pdf-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(153, 95, 47, 0.5);
+    color: #fff;
+  }
+  .pdf-btn:active {
+    transform: translateY(0);
   }
 
-  .t-padlet-btn:hover {
-    background: #995f2f; /* --secondary */
-    transform: translateY(-2px);
+  /* Main PDF View Panel */
+  .t-modal-preview {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid #e4d6a9;
+    box-shadow: inset 0 2px 15px rgba(0,0,0,0.08);
+  }
+
+  .t-modal-preview iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: none;
+  }
+
+  .pdf-spinner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #995f2f;
+    font-weight: 500;
+    z-index: 1;
+    font-size: 1rem;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 900px) {
+    .t-modal-content {
+      max-width: 95vw;
+      height: 95vh;
+      padding: 1.5rem;
+    }
+    .t-modal-layout {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 1rem;
+    }
+    .t-modal-sidebar {
+      border-right: none;
+      border-bottom: 2px dashed #e4d6a9;
+      padding-right: 0;
+      padding-bottom: 1rem;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .t-popup-img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 0;
+    }
+    #m-team-name {
+      width: 100%;
+      font-size: 1.2rem;
+    }
+    .t-info-box {
+      width: 100%;
+      order: 3;
+    }
+    .pdf-btn {
+      order: 4;
+      margin-top: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .t-modal-sidebar {
+      flex-direction: column;
+    }
+    .t-info-box {
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+    }
+    .pdf-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+    }
   }
 </style>
 
@@ -190,54 +348,121 @@ const { member } = Astro.props;
     const modal = document.getElementById('team-modal');
     const closeBtn = document.querySelector('.t-modal-close');
     
-    // Modal fields inside DOM
-    const mImg = document.getElementById('m-team-img') as HTMLImageElement;
+    // Modal Element References
+    const mImg = document.getElementById('m-team-img') as HTMLImageElement | null;
     const mName = document.getElementById('m-team-name');
     const mRole = document.getElementById('m-team-role');
     const mMatric = document.getElementById('m-team-matric');
-    const mPadlet = document.getElementById('m-team-padlet') as HTMLAnchorElement;
+    const mEmail = document.getElementById('m-team-email') as HTMLAnchorElement | null;
+    const mDept = document.getElementById('m-team-dept');
+    const mIframe = document.getElementById('m-team-iframe') as HTMLIFrameElement | null;
+    const mPdfBtn = document.getElementById('m-pdf-btn') as HTMLAnchorElement | null;
+    const pdfLoading = document.getElementById('pdf-loading');
 
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        const htmlCard = card as HTMLElement;
-        
-        // Grab data attributes injected securely from Astro template loop
-        const name = htmlCard.dataset.name || '';
-        const matric = htmlCard.dataset.matric || '';
-        const role = htmlCard.dataset.role || '';
-        const img = htmlCard.dataset.img || '';
-        const padlet = htmlCard.dataset.padlet || '#';
-
-        if (modal && mImg && mName && mRole && mMatric && mPadlet) {
-          // Fill text values dynamically
-          mImg.src = img;
-          mName.textContent = name;
-          mRole.textContent = role;
-          mMatric.textContent = matric;
-          mPadlet.href = padlet;
-
-          // Open state control
-          modal.classList.add('show');
-          document.body.style.overflow = 'hidden';
+    const openModal = (data: Record<string, string>) => {
+      // Populate text and image fields
+      if (mImg) mImg.src = data.img || '';
+      if (mName) mName.textContent = data.name || '';
+      if (mRole) mRole.textContent = data.role || '';
+      if (mMatric) mMatric.textContent = data.matric || 'Tiada Maklumat';
+      if (mDept) mDept.textContent = data.dept || 'Tiada Maklumat';
+      
+      // Handle Email Links
+      if (mEmail) {
+        if (data.email) {
+          mEmail.href = `mailto:${data.email}`;
+          mEmail.textContent = data.email;
+          mEmail.style.opacity = '1';
+        } else {
+          mEmail.removeAttribute('href');
+          mEmail.textContent = 'Tiada Maklumat';
+          mEmail.style.opacity = '0.6';
         }
-      });
-    });
+      }
+      
+      // Handle External Button Setup
+      if (mPdfBtn) {
+        mPdfBtn.href = data.padlet || '#';
+        mPdfBtn.style.display = data.padlet ? 'inline-flex' : 'none';
+      }
+      
+      // Handle Iframe Lifecycle & Loading State
+      if (mIframe) {
+        if (pdfLoading) pdfLoading.style.display = 'flex';
+        
+        const pdfSrc = data.padlet ? `${data.padlet}#toolbar=0` : '';
+        mIframe.src = pdfSrc;
+        
+        mIframe.onload = () => {
+          if (pdfLoading) pdfLoading.style.display = 'none';
+        };
+      }
+      
+      // Fire Open Animation and Global System Lock
+      if (modal) {
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+    };
 
     const closeTeamModal = () => {
       if (modal) {
         modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+      }
+      if (mIframe) {
+        // Unload asset to recover document context memory
+        mIframe.src = '';
+      }
+      if (pdfLoading) {
+        pdfLoading.textContent = 'Memuatkan Dokumen...';
+        pdfLoading.style.color = '#995f2f';
+        pdfLoading.style.display = 'flex';
       }
     };
 
+    // Card Node Loop
+    cards.forEach(card => {
+      const element = card as HTMLElement;
+      
+      element.addEventListener('click', () => {
+        const data = {
+          name: element.dataset.name || '',
+          matric: element.dataset.matric || '',
+          role: element.dataset.role || '',
+          email: element.dataset.email || '',
+          dept: element.dataset.dept || '',
+          img: element.dataset.img || '',
+          padlet: element.dataset.padlet || ''
+        };
+        openModal(data);
+      });
+      
+      // Keyboard interaction handling
+      element.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          element.click();
+        }
+      });
+      element.setAttribute('tabindex', '0');
+      element.setAttribute('role', 'button');
+    });
+
     if (closeBtn) closeBtn.addEventListener('click', closeTeamModal);
+    
     if (modal) {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) closeTeamModal();
       });
     }
+    
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeTeamModal();
+      if (e.key === 'Escape' && modal?.classList.contains('show')) {
+        closeTeamModal();
+      }
     });
   });
 </script>
