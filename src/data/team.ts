@@ -1,7 +1,7 @@
 import aqilImg from '../assets/images/aqil.PNG'; 
 import amirImg from '../assets/images/amir.PNG';
 import imanImg from '../assets/images/iman.jpeg';
-import najihahImg from '../assets/images/najiha.png'; // Update your file names
+import najihahImg from '../assets/images/najiha.PNG'; // Update your file names
 import irrdhinaImg from '../assets/images/irrdhina.jpeg';
 
 export const teamMembers = [
