@@ -1,5 +1,5 @@
 import aqilImg from '../assets/images/aqil.PNG'; 
-import amirImg from '../assets/images/amir.png';
+import amirImg from '../assets/images/amir.PNG';
 import imanImg from '../assets/images/iman.jpeg';
 import najihahImg from '../assets/images/najiha.png'; // Update your file names
 import irrdhinaImg from '../assets/images/irrdhina.jpeg';
