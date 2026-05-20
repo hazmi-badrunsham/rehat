@@ -1,0 +1,22 @@
+---
+import TeamCard from "./TeamCard.astro";
+import { teamMembers } from "../data/team";
+---
+
+<section id="organization" class="section">
+  <div class="container">
+    <p class="section-label">ORGANISASI</p>
+
+    <h2 class="section-title center">
+      Carta Organisasi REHAT
+    </h2>
+
+    <div class="team-grid">
+      {
+        teamMembers.map((member) => (
+          <TeamCard member={member} />
+        ))
+      }
+    </div>
+  </div>
+</section>

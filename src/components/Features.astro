@@ -1,0 +1,29 @@
+---
+const features = [
+  "Privasi Terjamin",
+  "Modular & Boleh Alih",
+  "Mesra Alam",
+  "Estetik Islamik ",
+  "Selesa & Selamat",
+];
+---
+
+<section id="features" class="section">
+  <div class="container">
+    <p class="section-label">CIRI-CIRI</p>
+
+    <h2 class="section-title center">
+      Ciri-ciri Inovasi Utama
+    </h2>
+
+    <div class="feature-grid">
+      {
+        features.map((feature) => (
+          <div class="feature-card">
+            <h3>{feature}</h3>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,243 @@
+---
+import { Image } from 'astro:assets';
+
+// Define the expected props
+const { member } = Astro.props;
+---
+
+<div 
+  class="team-card clickable-team-card" 
+  data-name={member.name}
+  data-matric={member.matricNo || "Tiada Maklumat"}
+  data-role={member.role}
+  data-img={member.image.src}
+  data-padlet={member.padletUrl || "#"}
+>
+  <Image 
+    src={member.image} 
+    alt={member.name} 
+    width={300} 
+    height={300} 
+    class="team-image" 
+  />
+
+  <h3>{member.name}</h3>
+
+  <p class="team-role" style="font-weight: bold;">
+    {member.role}
+  </p>
+
+  <p class="team-description">
+    {member.description}
+  </p>
+</div>
+
+<!-- Global Team Modal (Rendered only once per page cycle) -->
+<div id="team-modal" class="t-modal">
+  <div class="t-modal-content">
+    <button class="t-modal-close">&times;</button>
+    
+    <div class="t-modal-body">
+      <img id="m-team-img" src="" alt="Profile view" class="t-popup-img" />
+      <h2 id="m-team-name"></h2>
+      <p id="m-team-role" class="t-popup-role"></p>
+      
+      <div class="t-info-box">
+        <p><strong>No. Matrik:</strong> <span id="m-team-matric"></span></p>
+      </div>
+
+      <a id="m-team-padlet" href="" target="_blank" rel="noopener noreferrer" class="t-padlet-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Buka Dokumen Padlet (PDF)
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .clickable-team-card {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .clickable-team-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Modal Base Backdrop */
+  .t-modal {
+    position: fixed;
+    z-index: 10000;
+    inset: 0;
+    background: rgba(42, 26, 18, 0.6); /* Tinted background color match your theme */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 1.5rem;
+  }
+
+  .t-modal.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Modal Content Card Box */
+  .t-modal-content {
+    background: #f6f1e1; /* --cream variable profile color */
+    border: 2px solid #e4d6a9; /* --card border matching accent */
+    width: 100%;
+    max-width: 420px;
+    border-radius: 2rem;
+    padding: 2.5rem 2rem;
+    position: relative;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+  }
+
+  .t-modal.show .t-modal-content {
+    transform: scale(1);
+  }
+
+  .t-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    font-size: 2.5rem;
+    color: #622b14; /* --primary */
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  /* Layout alignment inside the modal body */
+  .t-modal-body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .t-popup-img {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 999px;
+    border: 4px solid #995f2f; /* --secondary */
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+
+  .t-modal-body h2 {
+    font-family: "Poppins", sans-serif;
+    color: #622b14;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .t-popup-role {
+    color: #995f2f;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    font-size: 1rem;
+  }
+
+  .t-info-box {
+    background: rgba(228, 214, 169, 0.4); /* soft card container blend */
+    padding: 0.75rem 1.5rem;
+    border-radius: 1rem;
+    margin-top: 1.25rem;
+    width: 100%;
+    color: #2a1a12;
+  }
+
+  /* Premium Padlet Resource Trigger Button */
+  .t-padlet-btn {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 1rem;
+    background: #622b14; /* --primary */
+    color: white;
+    font-weight: 600;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+    font-size: 0.95rem;
+    box-shadow: 0 8px 20px rgba(98, 43, 20, 0.2);
+  }
+
+  .t-padlet-btn:hover {
+    background: #995f2f; /* --secondary */
+    transform: translateY(-2px);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.clickable-team-card');
+    const modal = document.getElementById('team-modal');
+    const closeBtn = document.querySelector('.t-modal-close');
+    
+    // Modal fields inside DOM
+    const mImg = document.getElementById('m-team-img') as HTMLImageElement;
+    const mName = document.getElementById('m-team-name');
+    const mRole = document.getElementById('m-team-role');
+    const mMatric = document.getElementById('m-team-matric');
+    const mPadlet = document.getElementById('m-team-padlet') as HTMLAnchorElement;
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const htmlCard = card as HTMLElement;
+        
+        // Grab data attributes injected securely from Astro template loop
+        const name = htmlCard.dataset.name || '';
+        const matric = htmlCard.dataset.matric || '';
+        const role = htmlCard.dataset.role || '';
+        const img = htmlCard.dataset.img || '';
+        const padlet = htmlCard.dataset.padlet || '#';
+
+        if (modal && mImg && mName && mRole && mMatric && mPadlet) {
+          // Fill text values dynamically
+          mImg.src = img;
+          mName.textContent = name;
+          mRole.textContent = role;
+          mMatric.textContent = matric;
+          mPadlet.href = padlet;
+
+          // Open state control
+          modal.classList.add('show');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    });
+
+    const closeTeamModal = () => {
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', closeTeamModal);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeTeamModal();
+      });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeTeamModal();
+    });
+  });
+</script>

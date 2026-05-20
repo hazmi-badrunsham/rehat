@@ -1,0 +1,20 @@
+---
+import { Image } from 'astro:assets';
+import logoImage from '../assets/logo.png'; // Adjust path accordingly
+---
+
+<nav class="navbar">
+  <div class="container navbar-wrapper">
+    <a href="/" class="logo">
+         <Image src={logoImage} alt="REHAT Logo" width="100" height="40" />
+    </a>
+
+    <div class="nav-links">
+      <a href="#intro">Pengenalan</a>
+      <a href="#features">Ciri-ciri</a>
+      <a href="#organization">Pasukan</a>
+      <a href="#poster">Poster</a>
+      <a href="#gallery">Galeri</a>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,29 @@
+---
+import { Image } from 'astro:assets';
+import introImage from '../assets/images/intro.png';
+---
+<section id="intro" class="section">
+  <div class="container grid-2">
+    <div>
+      <p class="section-label">PENGENALAN</p>
+
+      <h2 class="section-title">
+        Inovasi Pintar untuk Keselesaan Pelajar
+      </h2>
+
+      <p class="section-text">
+        Syarikat Reka Skala Sdn. Bhd. merupakan sebuah syarikat yang memfokuskan pembangunan reka bentuk inovatif berasaskan teknologi pintar dalam bidang seni bina dan reka bentuk dalaman. Selaras dengan perkembangan teknologi masa kini, syarikat ini menghasilkan ruang pintar moden yang mampu meningkatkan kesejahteraan, produktiviti dan keselesaan pengguna khususnya pelajar universiti.
+      </p>
+
+      <!-- <p class="section-text">
+        The pod integrates intelligent environmental control,
+        smart lighting and ergonomic interior design to create
+        a more comfortable and productive resting experience.
+      </p> -->
+    </div>
+
+    <div class="image-card">
+      <Image src={introImage} alt="REHAT Mockup" />
+    </div>
+  </div>
+</section>

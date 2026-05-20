@@ -1,0 +1,23 @@
+---
+import { Image } from "astro:assets";
+// Import your poster image
+import posterImage from "../assets/images/info.png";
+---
+
+<section id="poster" class="section">
+  <div class="container">
+    <p class="section-label">INFOGRAFI</p>
+
+    <h2 class="section-title center">POSTER</h2>
+
+    <div class="poster-wrapper">
+      <Image
+        src={posterImage}
+        alt="Infographic Poster"
+        inferSize
+        format="webp"
+        class="poster-img"
+      />
+    </div>
+  </div>
+</section>

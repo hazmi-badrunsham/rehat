@@ -1,0 +1,189 @@
+---
+import { Image } from 'astro:assets';
+import { galleryItems } from "../data/gallery";
+---
+
+<section id="gallery" class="section">
+  <div class="container">
+    <p class="section-label">PAMERAN</p>
+
+    <h2 class="section-title center">
+      Galeri REHAT
+    </h2>
+
+    <div class="modern-gallery">
+      {
+        galleryItems.map((item) => (
+          <div class="gallery-item">
+            <Image
+              src={item.image}
+              alt={item.title}
+              width={800}
+              height={600}
+              format="webp"
+              class="gallery-img"
+            />
+            <!-- Modern hover overlay icon -->
+            <div class="gallery-overlay">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Fullscreen Lightbox Modal -->
+<div id="gallery-modal" class="modal">
+  <button class="modal-close">&times;</button>
+  <img id="modal-image" src="" alt="Fullscreen view" />
+</div>
+
+<style>
+  /* --- Modern Grid Layout --- */
+  .modern-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .gallery-item {
+    position: relative;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 4 / 3; /* Keeps grid cards uniform */
+    
+    /* Uses your custom off-white color to frame drawings beautifully */
+    background-color: #F9F9F8; 
+    
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem; /* Adds a clean museum-matting margin around drawings */
+  }
+
+  .gallery-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    
+    /* CRUCIAL FIX: Shows 100% of the image, zero cropping */
+    object-fit: contain; 
+    
+    transition: transform 0.4s ease;
+  }
+
+  /* --- Hover Effects --- */
+  .gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2); /* Softer overlay for structural details */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+    border-radius: 1.5rem;
+  }
+
+  .gallery-item:hover .gallery-img {
+    transform: scale(1.05); /* Clean, controlled zoom */
+  }
+
+  .gallery-item:hover .gallery-overlay {
+    opacity: 1; 
+  }
+
+  /* --- Fullscreen Lightbox Modal Styles --- */
+  .modal {
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95); /* Darker backdrop to emphasize drawing lines */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none; 
+    transition: opacity 0.3s ease;
+    padding: 2rem;
+  }
+
+  .modal.show {
+    opacity: 1;
+    pointer-events: all; 
+  }
+
+  #modal-image {
+    max-width: 95%;
+    max-height: 90vh;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    transform: scale(0.97);
+    transition: transform 0.3s ease;
+    object-fit: contain; /* Prevents modal view from cropping too */
+  }
+
+  .modal.show #modal-image {
+    transform: scale(1);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .modal-close:hover {
+    color: #ccc;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    const modal = document.getElementById('gallery-modal');
+    const modalImg = document.getElementById('modal-image') as HTMLImageElement;
+    const closeBtn = document.querySelector('.modal-close');
+
+    galleryItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const img = item.querySelector('.gallery-img') as HTMLImageElement;
+        if (img && modalImg && modal) {
+          modalImg.src = img.src; 
+          modal.classList.add('show');
+          document.body.style.overflow = 'hidden'; 
+        }
+      });
+    });
+
+    const closeModal = () => {
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; 
+      }
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  });
+</script>
