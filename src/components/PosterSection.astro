@@ -1,7 +1,11 @@
 ---
 import { Image } from "astro:assets";
-// Import your poster image
-import posterImage from "../assets/images/info.png";
+// Import your poster images
+import posterImage from "../assets/BM POSTER.png";
+import posterImage2 from "../assets/BM POSTER 2.png";
+
+// Path to your downloadable PDF inside the public/ folder
+const downloadPdfUrl = "/BM POSTER.pdf";
 ---
 
 <section id="poster" class="section">
@@ -10,14 +14,291 @@ import posterImage from "../assets/images/info.png";
 
     <h2 class="section-title center">POSTER</h2>
 
-    <div class="poster-wrapper">
-      <Image
-        src={posterImage}
-        alt="Infographic Poster"
-        inferSize
-        format="webp"
-        class="poster-img"
-      />
+    <!-- Poster Content Stack (Using your existing classes to preserve your styling) -->
+    <div class="poster-display-stack">
+      <!-- Added 'zoomable-poster' class for JS targeting -->
+      <div class="poster-wrapper zoomable-poster" data-src={posterImage.src}>
+        <Image
+          src={posterImage}
+          alt="Infographic Poster Bahagian 1"
+          inferSize
+          format="webp"
+          class="poster-img"
+          loading="lazy"
+        />
+        <div class="zoom-overlay-hint">
+          <span>🔍</span>
+        </div>
+      </div>
+
+      <div class="poster-wrapper zoomable-poster" data-src={posterImage2.src}>
+        <Image
+          src={posterImage2}
+          alt="Infographic Poster Bahagian 2"
+          inferSize
+          format="webp"
+          class="poster-img"
+          loading="lazy"
+        />
+        <div class="zoom-overlay-hint">
+          <span>🔍</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Improvised Action Section for PDF Opening -->
+    <div class="poster-actions">
+      <div class="download-card">
+        <div class="download-text">
+          <h3>Poster</h3>
+          <p>Buka salinan digital naskah penuh dalam format PDF.</p>
+        </div>
+        <!-- Removed download attribute, added target="_blank" to redirect and view -->
+        <a href={downloadPdfUrl} target="_blank" rel="noopener noreferrer" class="download-pdf-btn">
+          <span class="btn-icon">📄</span>
+          <span class="btn-text">Lihat PDF</span>
+        </a>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- Lightbox Pop-up Structure -->
+<div id="poster-lightbox" class="lightbox">
+  <button class="lightbox-close" aria-label="Tutup paparan">✕</button>
+  <div class="lightbox-content">
+    <img id="lightbox-img" src="" alt="Paparan Poster Besar" />
+  </div>
+</div>
+
+<script>
+  // Dynamic client-side interactive handler
+  const posterCards = document.querySelectorAll('.zoomable-poster');
+  const lightbox = document.getElementById('poster-lightbox');
+  const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  const closeBtn = document.querySelector('.lightbox-close');
+
+  if (lightbox && lightboxImg) {
+    posterCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const fullSrc = card.getAttribute('data-src');
+        if (fullSrc) {
+          lightboxImg.src = fullSrc;
+          lightbox.classList.add('active');
+          document.body.style.overflow = 'hidden'; // Lock main scrolling
+        }
+      });
+    });
+
+    // Close mechanisms
+    const closeLightbox = () => {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = ''; // Restore background scrolling
+      setTimeout(() => { lightboxImg.src = ''; }, 300); // Reset image after transition
+    };
+
+    closeBtn?.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightbox.querySelector('.lightbox-content')) {
+        closeLightbox();
+      }
+    });
+
+    // Close on Escape key press
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+        closeLightbox();
+      }
+    });
+  }
+</script>
+
+<style>
+  /* === Safe Additions (Does not touch or overwrite your existing .poster-wrapper or .poster-img styles) === */
+  
+  .poster-display-stack {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    align-items: start;
+  }
+
+  /* Enhancing the wrapper for interactive click feedback */
+  .zoomable-poster {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: inherit; /* Matches your core poster configuration structure */
+  }
+
+  .zoomable-poster:hover .poster-img {
+    transform: scale(1.02);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Subtle indicator on hover */
+  .zoom-overlay-hint {
+    position: absolute;
+    inset: 0;
+    background: rgba(98, 43, 20, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .zoom-overlay-hint span {
+    background: rgba(255, 255, 255, 0.95);
+    color: #622b14;
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .zoomable-poster:hover .zoom-overlay-hint {
+    opacity: 1;
+  }
+
+  .poster-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+
+  .download-card {
+    background: #ffffff;
+    border: 1px solid #e4d6a9;
+    border-radius: 1rem;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 10px 25px rgba(66, 42, 26, 0.04);
+  }
+
+  .download-text h3 {
+    margin: 0 0 0.25rem 0;
+    color: #622b14;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .download-text p {
+    margin: 0;
+    color: #4a3728;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .download-pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: linear-gradient(135deg, #995f2f, #622b14);
+    color: #ffffff;
+    padding: 0.85rem 1.75rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(98, 43, 20, 0.15);
+  }
+
+  .download-pdf-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(98, 43, 20, 0.3);
+    color: #ffffff;
+  }
+
+  /* === Pop-up (Lightbox) Style Rules === */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(30, 20, 15, 0.92); /* Rich dark brown alpha background */
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 2rem;
+  }
+
+  .lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .lightbox-content {
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow: auto; /* Allows explicit browser pan/scroll zoom exploration */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+  }
+
+  .lightbox-content img {
+    max-width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: zoom-in; /* Indicates user can use native browser image scaling gestures */
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 10000;
+  }
+
+  .lightbox-close:hover {
+    transform: scale(1.15);
+  }
+
+  /* Responsiveness for tablet and mobile screens */
+  @media (max-width: 768px) {
+    .poster-display-stack {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .lightbox {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .download-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem;
+      gap: 1.25rem;
+    }
+    
+    .download-pdf-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
